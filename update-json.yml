@@ -30,13 +30,7 @@ jobs:
 
       - name: Generate update.json
         run: |
-          cat > update.json <<EOF
-{
-  "version": "${{ steps.set_vars.outputs.version }}",
-  "package": "${{ steps.set_vars.outputs.package }}",
-  "url": "https://github.com/${{ github.repository }}"
-}
-EOF
+          echo "{\"version\": \"${{ steps.set_vars.outputs.version }}\", \"package\": \"${{ steps.set_vars.outputs.package }}\", \"url\": \"https://github.com/${{ github.repository }}\"}" > update.json
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
         with:
