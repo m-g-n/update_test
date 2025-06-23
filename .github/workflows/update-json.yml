@@ -24,7 +24,7 @@ jobs:
         run: |
           VERSION=${{ steps.get_tag.outputs.tag }}
           VERSION_NO_V=${VERSION#v}
-          ZIP_URL="https://github.com/${{ github.repository }}/releases/download/${VERSION}/autoapudate.zip"
+          ZIP_URL="https://github.com/${{ github.repository }}/releases/download/${VERSION}/update_test.zip"
           echo "version=$VERSION_NO_V" >> $GITHUB_OUTPUT
           echo "package=$ZIP_URL" >> $GITHUB_OUTPUT
 
