@@ -50,9 +50,8 @@ jobs:
       - name: Create zip for release
         if: steps.compare.outputs.should_release == 'true'
         run: |
-          ZIPNAME="autoapudate-${{ steps.get_version.outputs.version }}.zip"
-          git archive --format zip --output "$ZIPNAME" HEAD
-          echo "zipname=$ZIPNAME" >> $GITHUB_OUTPUT
+          git archive --format zip --output update_test.zip HEAD
+          echo "zipname=update_test.zip" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         if: steps.compare.outputs.should_release == 'true'
@@ -60,6 +59,6 @@ jobs:
         with:
           tag_name: ${{ steps.get_version.outputs.version }}
           name: Release ${{ steps.get_version.outputs.version }}
-          files: ${{ steps.get_version.outputs.zipname }}
+          files: update_test.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
