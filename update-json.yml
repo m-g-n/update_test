@@ -30,11 +30,11 @@ jobs:
 
       - name: Generate update.json
         run: |
-          cat <<EOF > update.json
+          cat > update.json <<EOF
 {
-  \"version\": \"${{ steps.set_vars.outputs.version }}\",
-  \"package\": \"${{ steps.set_vars.outputs.package }}\",
-  \"url\": \"https://github.com/${{ github.repository }}\"
+  "version": "${{ steps.set_vars.outputs.version }}",
+  "package": "https://github.com/${{ github.repository }}/releases/download/${{ steps.get_tag.outputs.tag }}/update_test.zip",
+  "url": "https://github.com/${{ github.repository }}"
 }
 EOF
 
