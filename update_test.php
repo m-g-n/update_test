@@ -2,7 +2,7 @@
 /*
 Plugin Name: Update Test
 Description: プラグインの動作テスト用の最小構成。
-Version: 1.0.0
+Version: 1.0.1
 Author: Your Name
 */
 
