@@ -1,0 +1,65 @@
+name: Release on version bump
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from update_test.php
+        id: get_version
+        run: |
+          VERSION=$(grep -E '^Version:' update_test.php | awk '{print $2}')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          TAG=$(git tag --sort=-v:refname | head -n1)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Compare version and tag
+        id: compare
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          TAG=${{ steps.get_tag.outputs.tag }}
+          if [ -z "$TAG" ]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          elif [ "$(printf '%s\n' "$VERSION" "$TAG" | sort -V | tail -n1)" = "$VERSION" ] && [ "$VERSION" != "$TAG" ]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create tag if version increased
+        if: steps.compare.outputs.should_release == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.get_version.outputs.version }}
+          git push origin ${{ steps.get_version.outputs.version }}
+
+      - name: Create zip for release
+        if: steps.compare.outputs.should_release == 'true'
+        run: |
+          ZIPNAME="autoapudate-${{ steps.get_version.outputs.version }}.zip"
+          git archive --format zip --output "$ZIPNAME" HEAD
+          echo "zipname=$ZIPNAME" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        if: steps.compare.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          name: Release ${{ steps.get_version.outputs.version }}
+          files: ${{ steps.get_version.outputs.zipname }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
