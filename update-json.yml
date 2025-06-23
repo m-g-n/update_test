@@ -37,7 +37,6 @@ jobs:
   "url": "https://github.com/${{ github.repository }}"
 }
 EOF
-
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
         with:
