@@ -1,9 +1,8 @@
 <?php
 /*
-Plugin Name: Auto Apudate
-Description: 自動アップデート用のサンプルプラグイン。
-Version: 1.0.2
-Author: Your Name
+ * 自動更新
+ * @package update_test
+ * @license MIT
 */
 
 namespace hogehoge;
@@ -22,7 +21,7 @@ class Auto_Apudate_Plugin {
         }
         $plugin_slug = plugin_basename( __FILE__ );
         // ここを実際のGitHub PagesのURLに変更してください
-        $json_url = 'https://yourname.github.io/autoapudate/update.json';
+        $json_url = 'https://m-g-n.github.io/update_test/update.json';
         $response = wp_remote_get( $json_url );
         if ( is_wp_error( $response ) ) {
             return $transient;

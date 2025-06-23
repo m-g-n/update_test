@@ -2,8 +2,8 @@
 /*
 Plugin Name: Update Test
 Description: プラグインの動作テスト用の最小構成。
-Version: 1.0.2
-Author: Your Name
+Version: 1.0.3
+Author: kutsu123
 */
 
 namespace hogehoge;
@@ -11,6 +11,9 @@ namespace hogehoge;
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // 直アクセス防止
 }
+
+define('UPDATE_TEST_MAIN_LOADED', true);
+require_once __DIR__ . '/autoapudate.php';
 
 if ( ! class_exists( '\hogehoge\Update_Test_Plugin' ) ) {
     class Update_Test_Plugin {
