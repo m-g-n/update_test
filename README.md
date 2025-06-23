@@ -30,3 +30,4 @@ MIT License
 ## 履歴
 - 1.0.0: 初版リリース
 - 1.0.1: 自動で更新ファイルが作れるようにテスト
+- 1.0.2: update.jsonの生成をGitHub Actionsで自動化
