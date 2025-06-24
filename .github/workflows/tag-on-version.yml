@@ -2,8 +2,8 @@ name: Release on new version tag
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
 
 jobs:
   release:
@@ -17,7 +17,7 @@ jobs:
       - name: Get current tag
         id: get_tag
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
+          TAG_NAME=$(git describe --tags --abbrev=0)
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Get latest tag (excluding current)
