@@ -2,7 +2,7 @@
 /*
 Plugin Name: Update Test
 Description: プラグインの動作テスト用の最小構成。
-Version: 1.0.6
+Version: 1.0.7
 Author: kutsu123
 */
 
