@@ -1,9 +1,9 @@
-name: Release on version bump
+name: Release on new version tag
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 
 jobs:
   release:
@@ -14,51 +14,40 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get version from update_test.php
-        id: get_version
-        run: |
-          VERSION=$(grep -E '^Version:' update_test.php | awk '{print $2}')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Get latest tag
+      - name: Get current tag
         id: get_tag
         run: |
-          TAG=$(git tag --sort=-v:refname | head -n1)
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      - name: Compare version and tag
+      - name: Get latest tag (excluding current)
+        id: get_latest
+        run: |
+          LATEST=$(git tag --sort=-v:refname | grep -v "^${{ steps.get_tag.outputs.tag }}$" | head -n1 || echo "")
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+
+      - name: Compare tags
         id: compare
         run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          TAG=${{ steps.get_tag.outputs.tag }}
-          if [ -z "$TAG" ]; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
-          elif [ "$(printf '%s\n' "$VERSION" "$TAG" | sort -V | tail -n1)" = "$VERSION" ] && [ "$VERSION" != "$TAG" ]; then
+          CUR=${{ steps.get_tag.outputs.tag }}
+          LATEST=${{ steps.get_latest.outputs.latest }}
+          if [ -z "$LATEST" ] || { [ "$(printf '%s\n' "$CUR" "$LATEST" | sort -V | tail -n1)" = "$CUR" ] && [ "$CUR" != "$LATEST" ]; }; then
             echo "should_release=true" >> $GITHUB_OUTPUT
           else
             echo "should_release=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create tag if version increased
-        if: steps.compare.outputs.should_release == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ steps.get_version.outputs.version }}
-          git push origin ${{ steps.get_version.outputs.version }}
-
       - name: Create zip for release
         if: steps.compare.outputs.should_release == 'true'
         run: |
           git archive --format zip --output update_test.zip HEAD
-          echo "zipname=update_test.zip" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         if: steps.compare.outputs.should_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.get_version.outputs.version }}
-          name: Release ${{ steps.get_version.outputs.version }}
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          name: Release ${{ steps.get_tag.outputs.tag }}
           files: update_test.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

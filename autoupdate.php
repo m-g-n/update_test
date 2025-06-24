@@ -20,7 +20,6 @@ class Auto_Apudate_Plugin {
             return $transient;
         }
         $plugin_slug = plugin_basename( __FILE__ );
-        // ここを実際のGitHub PagesのURLに変更してください
         $json_url = 'https://m-g-n.github.io/update_test/update.json';
         $response = wp_remote_get( $json_url );
         if ( is_wp_error( $response ) ) {
@@ -31,6 +30,7 @@ class Auto_Apudate_Plugin {
             return $transient;
         }
         $new_version = $data->version;
+        error_log($new_version);
         $current_version = get_plugin_data( __FILE__ )['Version'];
         if ( version_compare( $current_version, $new_version, '>=' ) ) {
             return $transient;
@@ -46,5 +46,5 @@ class Auto_Apudate_Plugin {
     }
 }
 
-remove_filter( 'site_transient_update_plugins', [ __NAMESPACE__ . '\\Auto_Apudate_Plugin', 'github_updater' ] );
+remove_filter( 'site_transient_update_plugins', [ __NAMESPACE__ . '\\Auto_Apudate_Plugin', 'github_pages_updater' ] );
 add_filter( 'site_transient_update_plugins', [ __NAMESPACE__ . '\\Auto_Apudate_Plugin', 'github_pages_updater' ] );
