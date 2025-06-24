@@ -30,8 +30,7 @@ class Auto_Apudate_Plugin {
             return $transient;
         }
         $new_version = $data->version;
-        error_log($new_version);
-        $current_version = get_plugin_data( __FILE__ )['Version'];
+        $current_version = get_plugin_data( UPDATE_TEST_PLUGIN_FILE )['Version'];
         if ( version_compare( $current_version, $new_version, '>=' ) ) {
             return $transient;
         }

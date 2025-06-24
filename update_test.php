@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 define('UPDATE_TEST_MAIN_LOADED', true);
 require_once __DIR__ . '/autoupdate.php';
 
+define('UPDATE_TEST_PLUGIN_FILE', __FILE__);
+
 if ( ! class_exists( '\hogehoge\Update_Test_Plugin' ) ) {
     class Update_Test_Plugin {
         public static function activate() {
