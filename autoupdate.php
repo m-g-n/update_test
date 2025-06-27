@@ -55,9 +55,8 @@ class AutoUpdatePlugin {
                 $plugin_data = [
                     'slug'        => $this->plugin_slug,
                     'new_version' => $api_response['version'],
-                    'package'     => $api_response['url'],
+                    'package'     => $api_response['package'],
                 ];
-
                 $transient->response[$this->plugin_slug . '/' . $this->plugin_slug . '.php'] = (object) $plugin_data;
             }
         }
