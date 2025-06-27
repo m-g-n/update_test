@@ -2,7 +2,7 @@
 /*
 Plugin Name: Update Test
 Description: プラグインの動作テスト用の最小構成。
-Version: 1.0.12
+Version: 1.0.13
 Author: kutsu123
 */
 
@@ -13,9 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define('UPDATE_TEST_MAIN_LOADED', true);
+define('UPDATE_TEST_PLUGIN_FILE', __FILE__);
+
 require_once __DIR__ . '/autoupdate.php';
 
-define('UPDATE_TEST_PLUGIN_FILE', __FILE__);
+
 
 if ( ! class_exists( '\hogehoge\Update_Test_Plugin' ) ) {
     class Update_Test_Plugin {

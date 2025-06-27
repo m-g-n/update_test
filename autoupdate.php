@@ -11,39 +11,58 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // 直アクセス防止
 }
 
-class Auto_Apudate_Plugin {
-    /**
-     * GitHub Pages上のJSONファイルを使った自動アップデート対応
-     */
-    public static function github_pages_updater( $transient ) {
-        if ( empty( $transient->checked ) ) {
+class AutoUpdatePlugin {
+    private $plugin_data;
+    private $api_url;
+    private $plugin_slug;
+    private $version;
+
+    public function __construct() {
+        $basename = plugin_basename( __FILE__ );
+        $plugin_data = get_plugin_data(UPDATE_TEST_PLUGIN_FILE);
+
+        $this->plugin_slug = dirname( $basename );
+        $this->version = $plugin_data['Version'];
+        $this->api_url = 'https://m-g-n.github.io/update_test/update.json'; //TODO：UPDATE URIに変更するべきか？
+
+        add_filter('site_transient_update_plugins', [$this, 'check_for_plugin_update']);
+        // add_filter('plugins_api', [$this, 'plugin_info'], 10, 3);
+        //remove_filter( 'site_transient_update_plugins', [ $this, 'github_pages_updater' ] );
+        // add_filter( 'site_transient_update_plugins', [ $this, 'github_pages_updater' ] );
+    }
+
+    public function check_for_plugin_update($transient) {
+        if (empty($transient->checked)) {
             return $transient;
         }
-        $plugin_slug = plugin_basename( __FILE__ );
-        $json_url = 'https://m-g-n.github.io/update_test/update.json';
-        $response = wp_remote_get( $json_url );
-        if ( is_wp_error( $response ) ) {
-            return $transient;
+        // Check cache
+        $cache_key = 'update_test_plugin';
+        $api_response = get_site_transient($cache_key);
+
+        if ($api_response === false) {
+            // Only request API if cache does not exist
+            $response = wp_remote_get($this->api_url);
+            if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
+                $api_response = json_decode(wp_remote_retrieve_body($response), true);
+                // Save cache for 24 hours
+                set_site_transient($cache_key, $api_response, 24 * HOUR_IN_SECONDS);
+            }
         }
-        $data = json_decode( wp_remote_retrieve_body( $response ) );
-        if ( ! isset( $data->version ) || ! isset( $data->package ) ) {
-            return $transient;
+
+        // Check update information if API response is valid
+        if ($api_response) {
+            if (version_compare($this->version, $api_response['version'], '<')) {
+                $plugin_data = [
+                    'slug'        => $this->plugin_slug,
+                    'new_version' => $api_response['version'],
+                    'package'     => $api_response['url'],
+                ];
+
+                $transient->response[$this->plugin_slug . '/' . $this->plugin_slug . '.php'] = (object) $plugin_data;
+            }
         }
-        $new_version = $data->version;
-        $current_version = get_plugin_data( UPDATE_TEST_PLUGIN_FILE )['Version'];
-        if ( version_compare( $current_version, $new_version, '>=' ) ) {
-            return $transient;
-        }
-        $transient->response[ $plugin_slug ] = (object) [
-            'slug'        => dirname( $plugin_slug ),
-            'plugin'      => $plugin_slug,
-            'new_version' => $new_version,
-            'url'         => isset( $data->url ) ? $data->url : '',
-            'package'     => $data->package,
-        ];
         return $transient;
     }
 }
 
-remove_filter( 'site_transient_update_plugins', [ __NAMESPACE__ . '\\Auto_Apudate_Plugin', 'github_pages_updater' ] );
-add_filter( 'site_transient_update_plugins', [ __NAMESPACE__ . '\\Auto_Apudate_Plugin', 'github_pages_updater' ] );
+new AutoUpdatePlugin();
