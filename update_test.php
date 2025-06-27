@@ -2,8 +2,9 @@
 /*
 Plugin Name: Update Test
 Description: プラグインの動作テスト用の最小構成。
-Version: 1.0.16
+Version: 1.0.17
 Author: kutsu123
+UpdateURI: https://m-g-n.github.io/update_test/update.json
 */
 
 namespace hogehoge;
@@ -13,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define('UPDATE_TEST_MAIN_LOADED', true);
-define('UPDATE_TEST_PLUGIN_FILE', __FILE__);
+define('UPDATE_TEST_PLUGIN_PATH', __FILE__);
 
 require_once __DIR__ . '/autoupdate.php';
 

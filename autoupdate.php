@@ -18,17 +18,14 @@ class AutoUpdatePlugin {
     private $version;
 
     public function __construct() {
-        $basename = plugin_basename( __FILE__ );
-        $plugin_data = get_plugin_data(UPDATE_TEST_PLUGIN_FILE);
+        $basename = plugin_basename(UPDATE_TEST_PLUGIN_PATH);
+        $plugin_data = get_plugin_data(UPDATE_TEST_PLUGIN_PATH);
 
         $this->plugin_slug = dirname( $basename );
         $this->version = $plugin_data['Version'];
-        $this->api_url = 'https://m-g-n.github.io/update_test/update.json'; //TODO：UPDATE URIに変更するべきか？
+        $this->api_url = $plugin_data['UpdateURI'];
 
         add_filter('site_transient_update_plugins', [$this, 'check_for_plugin_update']);
-        // add_filter('plugins_api', [$this, 'plugin_info'], 10, 3);
-        //remove_filter( 'site_transient_update_plugins', [ $this, 'github_pages_updater' ] );
-        // add_filter( 'site_transient_update_plugins', [ $this, 'github_pages_updater' ] );
     }
 
     public function check_for_plugin_update($transient) {
