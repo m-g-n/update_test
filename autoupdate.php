@@ -1,6 +1,6 @@
 <?php
 /*
- * 自動更新
+ * プラグインの自動更新
  * @package update_test
  * @license MIT
 */
@@ -12,7 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class AutoUpdatePlugin {
-    private $plugin_data;
     private $api_url;
     private $plugin_slug;
     private $version;
@@ -42,7 +41,7 @@ class AutoUpdatePlugin {
             if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
                 $api_response = json_decode(wp_remote_retrieve_body($response), true);
                 // Save cache for 24 hours
-                set_site_transient($cache_key, $api_response, 24 * HOUR_IN_SECONDS);
+                set_site_transient($cache_key, $api_response, 12 * HOUR_IN_SECONDS);
             }
         }
 
