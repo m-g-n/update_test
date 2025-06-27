@@ -17,10 +17,9 @@ class AutoUpdatePlugin {
     private $version;
 
     public function __construct() {
-        $basename = plugin_basename(UPDATE_TEST_PLUGIN_PATH);
         $plugin_data = get_plugin_data(UPDATE_TEST_PLUGIN_PATH);
 
-        $this->plugin_slug = dirname( $basename );
+        $this->plugin_slug = dirname( UPDATE_TEST_PLUGIN_BASENAME );
         $this->version = $plugin_data['Version'];
         $this->api_url = $plugin_data['UpdateURI'];
 
@@ -53,7 +52,7 @@ class AutoUpdatePlugin {
                     'new_version' => $api_response['version'],
                     'package'     => $api_response['package'],
                 ];
-                $transient->response[$basename] = (object) $plugin_data;
+                $transient->response[UPDATE_TEST_PLUGIN_BASENAME] = (object) $plugin_data;
             }
         }
         return $transient;
