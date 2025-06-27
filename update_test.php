@@ -2,7 +2,7 @@
 /*
 Plugin Name: Update Test
 Description: プラグインの動作テスト用の最小構成。
-Version: 1.0.21
+Version: 1.0.22
 Author: kutsu123
 Update URI: https://m-g-n.github.io/update_test/update.json
 */
